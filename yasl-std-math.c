@@ -194,7 +194,7 @@ int YASL_math_isprime(struct YASL_State *S) {
 		n = num->value.ival;
 	}
 
-	int p = prob_is_prime(n, 25);
+	int p = prob_is_prime(n, 32);
 	//int p = is_prime(n);
 	if (p < 0) return YASL_pushundef(S);
 	return YASL_pushboolean(S, p > 0);
