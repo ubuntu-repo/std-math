@@ -1,7 +1,7 @@
 # std-math
 Standard mathematics library providing common scientific functions.
 
-### Functions
+### Standard Functions
 Functions take both floating point and integer values unless otherwise stated
 * `math.abs(x)` returns the absolute value (or magnitude) of a number, thus always non-negative
 * `math.exp(x)` returns e^x, the natural exponentiation
@@ -14,3 +14,9 @@ Functions take both floating point and integer values unless otherwise stated
 * `math.floor(x)` returns the integer closest to x such that it is less-than or equal-to x
 * `math.deg(x)` treats x as an angle in radians and returns the equivalent angle in degrees
 * `math.rad(x)` treats x as an angle in degrees and returns the equivalent angle in radians
+
+### Number Theoretic Functions
+Function arguments will be type cast to integers unless otherwise specified
+* `math.isprime(n)` return true iff n is a positive prime
+* `math.gcd(a, b)` return the greatest common divisor of |a| and |b|
+* `math.lcm(a, b)` return the lowest common multiple of |a| and |b|

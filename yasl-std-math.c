@@ -5,6 +5,7 @@
 #include <math.h>
 
 #include "YASL_Object.h"
+#include "prime.h"
 
 #define POP_NUMBER(state, obj_name, fn_name) \
 					struct YASL_Object *obj_name = YASL_popobject(state); \
@@ -183,6 +184,71 @@ int YASL_math_rad(struct YASL_State *S) {
 	return YASL_pushfloat(S, n);
 }
 
+int YASL_math_isprime(struct YASL_State *S) {
+	POP_NUMBER(S, num, "math.isprime");
+
+	int64_t n;
+	if (YASL_ISFLOAT(*num)) {
+		n = num->value.dval;
+	} else {
+		n = num->value.ival;
+	}
+
+	return YASL_pushboolean(S, is_prime(n) > 0);
+}
+int64_t gcd_helper(int64_t a, int64_t b) {
+	if (a < b) {
+		int64_t tmp = a;
+		a = b;
+		b = tmp;
+	}
+
+	int64_t r = 1;
+	while(r != 0) {
+		r = a % b;
+		a = b;
+		b = r;
+	};
+	return a;
+}
+int YASL_math_gcd(struct YASL_State *S) {
+	POP_NUMBER(S, numA, "math.gcd");
+	POP_NUMBER(S, numB, "math.gcd");
+
+	int64_t a, b, r = 0;
+	if (YASL_ISFLOAT(*numA)) {
+		a = numA->value.dval;
+	} else {
+		a = numA->value.ival;
+	}
+	if (YASL_ISFLOAT(*numB)) {
+		b = numB->value.dval;
+	} else {
+		b = numB->value.ival;
+	}
+
+	return YASL_pushinteger(S, gcd_helper(a, b));
+}
+int YASL_math_lcm(struct YASL_State *S) {
+	POP_NUMBER(S, numA, "math.lcm");
+	POP_NUMBER(S, numB, "math.lcm");
+
+	int64_t a, b, r = 0;
+	if (YASL_ISFLOAT(*numA)) {
+		a = numA->value.dval;
+	} else {
+		a = numA->value.ival;
+	}
+	if (YASL_ISFLOAT(*numB)) {
+		b = numB->value.dval;
+	} else {
+		b = numB->value.ival;
+	}
+
+	int64_t gcd = gcd_helper(a, b);
+	return YASL_pushinteger(S, b*a/gcd);
+}
+
 int YASL_load_math(struct YASL_State *S) {
     struct YASL_Object *math = YASL_Table();
 
@@ -241,6 +307,16 @@ int YASL_load_math(struct YASL_State *S) {
     struct YASL_Object *rad_fn = YASL_CFunction(YASL_math_rad, 1);
     YASL_Table_set(math, rad_str, rad_fn);
 
+	struct YASL_Object *isprime_str = YASL_CString("isprime");
+    struct YASL_Object *isprime_fn = YASL_CFunction(YASL_math_isprime, 1);
+    YASL_Table_set(math, isprime_str, isprime_fn);
+    struct YASL_Object *gcd_str = YASL_CString("gcd");
+    struct YASL_Object *gcd_fn = YASL_CFunction(YASL_math_gcd, 2);
+    YASL_Table_set(math, gcd_str, gcd_fn);
+	struct YASL_Object *lcm_str = YASL_CString("lcm");
+    struct YASL_Object *lcm_fn = YASL_CFunction(YASL_math_lcm, 2);
+    YASL_Table_set(math, lcm_str, lcm_fn);
+
     YASL_declglobal(S, "math");
     YASL_pushobject(S, math);
     YASL_setglobal(S, "math");
@@ -282,6 +358,13 @@ int YASL_load_math(struct YASL_State *S) {
     free(deg_fn);
 	free(rad_str);
     free(rad_fn);
+
+	free(isprime_str);
+    free(isprime_fn);
+	free(gcd_str);
+    free(gcd_fn);
+	free(lcm_str);
+    free(lcm_fn);
 
     return YASL_SUCCESS;
 }
